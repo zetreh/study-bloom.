@@ -1,0 +1,134 @@
+{
+  "canonoy@gmail.com": {
+    "credits": 0,
+    "plant": {
+      "type": "Birds of Paradise",
+      "stage": 0,
+      "health": 100
+    },
+    "schedules": [
+      {
+        "id": 1777687298040,
+        "subject": "biology",
+        "date": "2026-05-02T02:05:00.000Z",
+        "completed": true,
+        "missed": false
+      },
+      {
+        "id": 1777697723921,
+        "subject": "biology",
+        "date": "2026-05-02T04:56:00.000Z",
+        "completed": false,
+        "missed": false
+      }
+    ],
+    "selectedTechnique": "pomodoro",
+    "fileUploaded": false,
+    "user": {
+      "loggedIn": true,
+      "username": "kirby",
+      "email": "canonoy@gmail.com",
+      "isAdmin": false
+    },
+    "reviewSource": "apollo",
+    "apolloTopic": "is nut a nut",
+    "apolloHistory": [
+      {
+        "role": "user",
+        "parts": [
+          {
+            "text": "You are Apollo, an expert study tutor. The user wants to study \"is nut a nut\" using the \"Pomodoro\" technique. Provide a highly educational synthesis consisting of 3 core concepts, an analogy, and a mini-quiz. Use HTML formatting like <h3> and <strong> and <ul> for structure."
+          }
+        ]
+      },
+      {
+        "role": "model",
+        "parts": [
+          {
+            "text": "Greetings! I am <strong>Apollo</strong>, your study tutor. We are about to begin your first 25-minute Pomodoro session. Our focus: the fascinating (and often confusing) distinction between botanical nuts and culinary nuts.\n\nSet your timer for 25 minutes, and let’s dive into the material.\n\n<h3>1. The Botanical Definition: \"True Nuts\"</h3>\n<ul>\n    <li><strong>Definition:</strong> In botany, a \"true nut\" is a dry fruit with a single seed encased in a hard, woody shell. </li>\n    <li><strong>Indehiscent:</strong> This is the most important characteristic. True nuts are <strong>indehiscent</strong>, meaning they do not split open on their own to release the seed when they reach maturity.</li>\n    <li><strong>Examples:</strong> Hazelnuts, acorns, and chestnuts are the primary examples of true botanical nuts.</li>\n</ul>\n\n<h3>2. The Great Imposters: \"Drupes\"</h3>\n<ul>\n    <li><strong>The Deception:</strong> Most of what we call \"nuts\" in the kitchen—walnuts, almonds, pecans, and pistachios—are actually <strong>drupes</strong>. </li>\n    <li><strong>Structure:</strong> A drupe is a fruit with a fleshy outer part surrounding a hard shell (a \"pit\" or \"stone\") with a seed inside. When you eat an almond, you are eating the seed found inside the stone of a fruit that looks very much like a peach.</li>\n    <li><strong>The Difference:</strong> Because the fleshy outer layer is removed before they reach the grocery store, we only see the \"nut-like\" center.</li>\n</ul>\n\n<h3>3. The Legume Exception: Peanuts</h3>\n<ul>\n    <li><strong>Ground Dwellers:</strong> Unlike true nuts or drupes which grow on trees, peanuts grow in pods underground.</li>\n    <li><strong>Legume Family:</strong> Peanuts belong to the <strong>Fabaceae</strong> family, making them closer relatives to peas, beans, and lentils than to walnuts or acorns.</li>\n    <li><strong>Culinary vs. Botanical:</strong> While we treat them as nuts because of their protein and fat content, they are biologically seeds inside a pod that splits (dehiscent).</li>\n</ul>\n\n<hr>\n\n<h3>The Analogy: The \"Hollywood Star\"</h3>\n<p>Think of the word \"Nut\" like the word <strong>\"Star.\"</strong></p>\n<p>In <strong>Hollywood (the Kitchen)</strong>, anyone famous and talented is called a \"star.\" This includes actors, singers, and reality TV personalities. They all serve the same purpose: entertainment.</p>\n<p>In <strong>Astronomy (Botany)</strong>, a \"star\" has a very strict definition: a luminous sphere of plasma held together by its own gravity. A planet (like a peanut) or a moon (like an almond) might look like a star from a distance, and they might all be in the \"night sky\" together, but their physical structure is completely different.</p>\n\n<hr>\n\n<h3>Mini-Quiz: Check Your Knowledge</h3>\n<p><em>Answer these before your 5-minute break begins!</em></p>\n<ol>\n    <li><strong>Which of the following is a \"True Nut\" botanically?</strong>\n        <ul>\n            <li>A) Peanut</li>\n            <li>B) Hazelnut</li>\n            <li>C) Almond</li>\n        </ul>\n    </li>\n    <li><strong>What does the term \"indehiscent\" mean?</strong> (It is the defining trait of a true nut shell).</li>\n    <li><strong>True or False:</strong> A walnut is biologically more similar to a peach than it is to an acorn.</li>\n</ol>\n\n<br>\n<strong>Apollo’s Study Tip:</strong> Now that you've finished the material, take a 5-minute break. Stand up, stretch, and hydrate. When you return, we will review the chemical composition of these \"seeds\"!"
+          }
+        ]
+      }
+    ],
+    "community": {
+      "activeGroup": "general"
+    },
+    "collection": [
+      {
+        "name": "Bonsai Tree",
+        "emoji": "🪴",
+        "grownAt": "2026-05-02T02:42:27.940Z"
+      }
+    ]
+  },
+  "supra@gmail.com": {
+    "credits": 0,
+    "plant": {
+      "type": "Lily",
+      "stage": 0,
+      "health": 100
+    },
+    "schedules": [],
+    "selectedTechnique": null,
+    "fileUploaded": false,
+    "user": {
+      "loggedIn": true,
+      "username": "hep",
+      "email": "supra@gmail.com",
+      "isAdmin": false
+    },
+    "reviewSource": "apollo",
+    "apolloTopic": "",
+    "apolloHistory": [],
+    "community": {
+      "activeGroup": "general"
+    }
+  },
+  "pengpeng@gmail.com": {
+    "credits": 0,
+    "plant": {
+      "type": "Cactus",
+      "stage": 0,
+      "health": 100
+    },
+    "schedules": [],
+    "selectedTechnique": null,
+    "fileUploaded": false,
+    "user": {
+      "loggedIn": true,
+      "username": "peng",
+      "email": "pengpeng@gmail.com",
+      "isAdmin": false
+    },
+    "reviewSource": "apollo",
+    "apolloTopic": "",
+    "apolloHistory": [],
+    "community": {
+      "activeGroup": "general"
+    }
+  },
+  "admin@studybloom.com": {
+    "credits": 0,
+    "plant": {
+      "type": "Cactus",
+      "stage": 0,
+      "health": 100
+    },
+    "schedules": [],
+    "collection": [],
+    "selectedTechnique": null,
+    "fileUploaded": false,
+    "user": {
+      "loggedIn": true,
+      "username": "deb",
+      "email": "admin@studybloom.com",
+      "isAdmin": true
+    },
+    "reviewSource": "apollo",
+    "apolloTopic": "",
+    "apolloHistory": [],
+    "community": {
+      "activeGroup": "general"
+    }
+  }
+}

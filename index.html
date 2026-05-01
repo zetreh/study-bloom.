@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study Bloom - Grow While You Learn</title>
+    <meta name="description" content="A gamified study reviewer system. Stay consistent, grow your garden.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Auth View -->
+        <section id="view-auth" class="view auth-view active-view">
+            <div class="auth-card glass-panel">
+                <div class="logo">
+                    <span class="icon">🌻</span>
+                    <h1>Study Bloom</h1>
+                </div>
+                <h2>Welcome Back</h2>
+                <p>Log in to grow your knowledge.</p>
+                <form id="auth-form">
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" required placeholder="Enter any username">
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" required placeholder="Enter your email to save progress">
+                    </div>
+                    <button type="submit" class="btn primary-btn">Enter</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar hidden" id="main-nav">
+            <div class="logo">
+                <span class="icon">🌻</span>
+                <h1>Study Bloom</h1>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#" id="nav-dashboard" class="active">Garden</a></li>
+                <li><a href="#" id="nav-schedule">Schedule</a></li>
+                <li><a href="#" id="nav-review">Review</a></li>
+                <li><a href="#" id="nav-community">Community</a></li>
+                <li><a href="#" id="nav-settings">Settings</a></li>
+                <li id="nav-admin-item" class="hidden"><a href="#" id="nav-admin" style="color: var(--warning);">Admin Panel</a></li>
+            </ul>
+            <div class="credits-display">
+                <span class="water-icon">💧</span>
+                <span id="credit-count">0</span> Credits
+            </div>
+            <div class="user-profile">
+                <span id="logged-in-user" class="user-name">User</span>
+                <button id="btn-logout" class="btn danger-btn small-btn">Logout</button>
+            </div>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="main-content hidden" id="main-content">
+            
+            <!-- Dashboard / Garden View -->
+            <section id="view-dashboard" class="view active-view">
+                <header>
+                    <h2>Your Virtual Garden</h2>
+                    <p>Consistency grows beautiful things.</p>
+                </header>
+                <div class="garden-container">
+                    <div class="plant-display">
+                        <div id="plant-emoji">🌱</div>
+                        <h3 id="plant-name">Seedling</h3>
+                        <div class="health-bar-container">
+                            <div id="health-bar" class="health-bar" style="width: 100%;"></div>
+                        </div>
+                        <p id="plant-status">Status: Healthy</p>
+                    </div>
+                    <div class="garden-actions">
+                        <button id="btn-water" class="btn primary-btn">Water Plant (Cost: 1 💧)</button>
+                        <p class="hint">Water your plant to help it grow!</p>
+                    </div>
+                </div>
+                
+                <div class="dashboard-stats">
+                    <div class="stat-card upcoming-reviews">
+                        <h3>Upcoming Reviews</h3>
+                        <ul id="upcoming-list" class="styled-list">
+                            <li class="empty-state">No upcoming reviews. Schedule one!</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- My Greenhouse Collection -->
+                <div class="greenhouse-section glass-panel" style="margin-top: 2rem; padding: 1.5rem;">
+                    <div class="greenhouse-header">
+                        <div>
+                            <h3>🌿 My Greenhouse</h3>
+                            <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.25rem;">Plants you've successfully grown to full bloom</p>
+                        </div>
+                        <div class="greenhouse-badge">
+                            <span id="greenhouse-count">0</span> Grown
+                        </div>
+                    </div>
+                    <p id="greenhouse-empty" class="empty-state" style="margin-top: 1rem;">
+                        🌱 No bloomed plants yet. Keep watering to grow your first!
+                    </p>
+                    <div id="greenhouse-grid" class="greenhouse-grid"></div>
+                </div>
+            </section>
+
+            <!-- Schedule View -->
+            <section id="view-schedule" class="view">
+                <header>
+                    <h2>Schedule Review</h2>
+                    <p>Plan your studies to keep your plants alive.</p>
+                </header>
+                <div class="form-card glass-panel">
+                    <form id="schedule-form">
+                        <div class="form-group">
+                            <label for="subject">Subject / Topic</label>
+                            <input type="text" id="subject" required placeholder="e.g., Biology 101">
+                        </div>
+                        <div class="form-group">
+                            <label for="review-date">Date & Time</label>
+                            <input type="datetime-local" id="review-date" required>
+                        </div>
+                        <button type="submit" class="btn primary-btn">Add to Schedule</button>
+                    </form>
+                </div>
+                <div class="schedule-list-card">
+                    <h3>All Scheduled Reviews</h3>
+                    <ul id="all-schedule-list" class="styled-list">
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Review View -->
+            <section id="view-review" class="view">
+                <header>
+                    <h2>Start Review</h2>
+                    <p>Upload your material, choose a technique, and earn credits.</p>
+                </header>
+                
+                <div id="review-setup" class="review-setup">
+                    <!-- Source Selection -->
+                    <div class="source-toggle">
+                        <button class="toggle-btn active" id="toggle-file" data-source="file">Upload File</button>
+                        <button class="toggle-btn" id="toggle-apollo" data-source="apollo">Ask Apollo AI</button>
+                    </div>
+
+                    <!-- File Upload -->
+                    <div class="upload-zone" id="upload-zone">
+                        <div class="upload-content">
+                            <span class="upload-icon">📄</span>
+                            <p>Drag & drop your study file here or <strong>click to browse</strong></p>
+                            <input type="file" id="file-upload" hidden>
+                            <p id="file-name" class="file-name"></p>
+                        </div>
+                    </div>
+
+                    <!-- Ask Apollo AI -->
+                    <div class="apollo-zone hidden" id="apollo-zone">
+                        <div class="apollo-content">
+                            <span class="apollo-icon">🤖</span>
+                            <p>What would you like to study today?</p>
+                            <input type="text" id="apollo-topic" placeholder="e.g., Photosynthesis, World War II" class="large-input">
+                        </div>
+                    </div>
+
+                    <!-- Techniques Selection -->
+                    <h3>Select Study Technique</h3>
+                    <div class="techniques-grid">
+                        <div class="technique-card" data-technique="spaced-repetition">
+                            <h4>Spaced Repetition</h4>
+                            <p>Review at increasing intervals to solidify memory.</p>
+                        </div>
+                        <div class="technique-card" data-technique="mind-mapping">
+                            <h4>Mind Mapping</h4>
+                            <p>Visually organize information hierarchically.</p>
+                        </div>
+                        <div class="technique-card" data-technique="chunking">
+                            <h4>Chunking</h4>
+                            <p>Break down complex information into smaller bits.</p>
+                        </div>
+                        <div class="technique-card" data-technique="pomodoro">
+                            <h4>Pomodoro</h4>
+                            <p>Study in focused intervals separated by short breaks.</p>
+                        </div>
+                        <div class="technique-card" data-technique="active-recall">
+                            <h4>Active Recall</h4>
+                            <p>Actively stimulate memory during the learning process.</p>
+                        </div>
+                        <div class="technique-card" data-technique="feynman">
+                            <h4>Feynman Technique</h4>
+                            <p>Learn by explaining the concept simply, as if teaching a child.</p>
+                        </div>
+                        <div class="technique-card" data-technique="distributed-practice">
+                            <h4>Distributed Practice</h4>
+                            <p>Spread out study sessions over time instead of cramming.</p>
+                        </div>
+                    </div>
+                    
+                    <button id="btn-start-review" class="btn primary-btn disabled">Start Session</button>
+                </div>
+
+                <!-- Active Session View -->
+                <div id="active-session" class="active-session hidden">
+                    <h2 id="session-technique-title">Technique Active</h2>
+                    <div class="timer-display" id="timer-display">25:00</div>
+                    
+                    <div id="file-apollo-toggle-container" class="hidden" style="text-align: center; margin-bottom: 1rem;">
+                        <span style="margin-right: 10px;">Apollo Assistance:</span>
+                        <div class="source-toggle" style="display: inline-flex;">
+                            <button class="toggle-btn active" id="btn-file-apollo-on">ON</button>
+                            <button class="toggle-btn" id="btn-file-apollo-off">OFF</button>
+                        </div>
+                    </div>
+
+                    <div id="file-preview-container" class="file-preview hidden">
+                        <!-- Content injected by JS -->
+                    </div>
+                    
+                    <div id="apollo-content-container" class="apollo-preview hidden glass-panel">
+                        <div id="apollo-loading" class="hidden" style="text-align: center; margin: 2rem 0;">
+                            <span class="spinner">⏳</span> Apollo is thinking...
+                        </div>
+                        <div id="apollo-chat-history" class="apollo-chat-history hidden">
+                            <!-- Apollo messages injected here -->
+                        </div>
+                        <div id="apollo-chat-input-area" class="chat-input-area hidden" style="margin-top: 1.5rem; border-top: 1px solid var(--glass-border); padding-top: 1.5rem;">
+                            <input type="text" id="apollo-chat-input" placeholder="Ask a follow-up question...">
+                            <button id="btn-send-apollo" class="btn primary-btn">Ask</button>
+                        </div>
+                    </div>
+
+                    <div class="session-controls">
+                        <button id="btn-complete-session" class="btn success-btn">Complete Session & Earn 💧</button>
+                        <button id="btn-cancel-session" class="btn danger-btn">Cancel</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Community View -->
+            <section id="view-community" class="view">
+                <header>
+                    <h2>Community Hub</h2>
+                    <p>Connect with others, share notes, and study together.</p>
+                </header>
+                <div class="community-container">
+                    <div class="groups-sidebar glass-panel">
+                        <h3>Study Groups</h3>
+                        <ul id="groups-list" class="styled-list">
+                            <li class="group-item active" data-group="general"># General</li>
+                            <li class="group-item" data-group="biology"># Biology</li>
+                            <li class="group-item" data-group="history"># History</li>
+                            <li class="group-item" data-group="programming"># Programming</li>
+                        </ul>
+                    </div>
+                    <div class="chat-area glass-panel">
+                        <div class="chat-header">
+                            <h3 id="current-group-name"># General</h3>
+                        </div>
+                        <div class="chat-messages" id="chat-messages">
+                            <!-- Messages injected by JS -->
+                        </div>
+                        <div class="chat-input-area">
+                            <input type="text" id="chat-input" placeholder="Type a message...">
+                            <button id="btn-send-chat" class="btn primary-btn">Send</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Settings View -->
+            <section id="view-settings" class="view">
+                <header>
+                    <h2>Settings</h2>
+                    <p>Configure your application preferences.</p>
+                </header>
+                <div class="form-card glass-panel" style="max-width: 600px; margin: 0 auto;">
+                    <h3>Account Info</h3>
+                    <p style="margin-bottom: 1.5rem; color: var(--text-muted); font-size: 0.9rem;">
+                        Settings are now securely managed on the server. Your data is automatically synced.
+                    </p>
+                </div>
+            </section>
+
+            <!-- Admin View -->
+            <section id="view-admin" class="view">
+                <header>
+                    <h2>Admin Dashboard</h2>
+                    <p>Manage users and global settings.</p>
+                </header>
+                <div class="admin-container">
+                    <div class="admin-stats" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                        <div class="stat-card glass-panel" style="padding: 1.5rem; text-align: center;">
+                            <h3>Total Users</h3>
+                            <p id="admin-total-users" style="font-size: 2.5rem; font-weight: 700; color: var(--primary); margin-top: 0.5rem;">0</p>
+                        </div>
+                        <div class="stat-card glass-panel" style="padding: 1.5rem; text-align: center;">
+                            <h3>Total Credits Global</h3>
+                            <p id="admin-total-credits" style="font-size: 2.5rem; font-weight: 700; color: var(--success); margin-top: 0.5rem;">0</p>
+                        </div>
+                    </div>
+
+                    <div class="admin-panel-card glass-panel" style="margin-top: 2rem;">
+                        <h3>User Management</h3>
+                        <div class="table-responsive" style="margin-top: 1rem; overflow-x: auto;">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>Username</th>
+                                        <th>Email</th>
+                                        <th>Credits</th>
+                                        <th>Plant Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="admin-users-list">
+                                    <!-- Populated by JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="admin-panel-card glass-panel" style="margin-top: 2rem;">
+                        <h3>Global Settings</h3>
+                        <form id="admin-settings-form" style="margin-top: 1rem;">
+                            <div class="form-group">
+                                <label for="new-plant-name">Add New Plant Type</label>
+                                <div style="display: flex; gap: 1rem;">
+                                    <input type="text" id="new-plant-name" placeholder="Plant Name (e.g., Orchid)" required style="flex: 1;">
+                                    <input type="text" id="new-plant-emoji" placeholder="Emoji (e.g., 🌺)" required style="width: 100px;">
+                                    <button type="submit" class="btn primary-btn">Add Plant</button>
+                                </div>
+                            </div>
+                        </form>
+                        <div style="margin-top: 2rem;">
+                            <h4>Current Plant Types</h4>
+                            <div id="admin-plants-list" class="plant-grid" style="grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); margin-top: 1rem;">
+                                <!-- Populated by JS -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+        
+        <!-- Plant Selection Modal -->
+        <div id="plant-modal" class="modal hidden">
+            <div class="modal-content glass-panel">
+                <h2>Choose a New Plant!</h2>
+                <p>Your previous plant fully bloomed. Select a new seed to grow.</p>
+                <div class="plant-grid" id="plant-grid">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Schedule Alarm Notification -->
+        <div id="schedule-alarm" class="schedule-alarm hidden">
+            <div class="alarm-icon">⏰</div>
+            <div class="alarm-body">
+                <div class="alarm-title" id="alarm-title">Review Starting Soon!</div>
+                <div class="alarm-subject" id="alarm-subject">Biology 101</div>
+                <div class="alarm-time" id="alarm-time">Starting in 5 minutes</div>
+            </div>
+            <div class="alarm-actions">
+                <button id="alarm-go-btn" class="btn primary-btn small-btn">Go Study →</button>
+                <button id="alarm-dismiss-btn" class="btn danger-btn small-btn">Dismiss</button>
+            </div>
+        </div>
+
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
