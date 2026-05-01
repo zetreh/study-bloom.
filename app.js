@@ -118,7 +118,7 @@ const adminPlantsList = document.getElementById('admin-plants-list');
 // Initialization
 async function init() {
     try {
-        const res = await fetch('http://localhost:3000/api/plants');
+        const res = await fetch('/api/plants');
         if (res.ok) {
             const customPlants = await res.json();
             if (customPlants.length) PLANT_TYPES = PLANT_TYPES.concat(customPlants);
@@ -175,7 +175,7 @@ async function loadState() {
     const activeEmail = localStorage.getItem('studyBloomActiveUser');
     if (activeEmail) {
         try {
-            const res = await fetch(`http://localhost:3000/api/state/${activeEmail}`);
+            const res = await fetch(`/api/state/${activeEmail}`);
             const data = await res.json();
             if (data.success && data.state) {
                 STATE = data.state;
@@ -194,7 +194,7 @@ async function saveState() {
     if (STATE.user && STATE.user.email) {
         localStorage.setItem('studyBloomActiveUser', STATE.user.email);
         try {
-            await fetch(`http://localhost:3000/api/state/${STATE.user.email}`, {
+            await fetch(`/api/state/${STATE.user.email}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(STATE)
@@ -224,7 +224,7 @@ function setupEventListeners() {
             
             let isNewUser = false;
             try {
-                const res = await fetch(`http://localhost:3000/api/state/${email}`);
+                const res = await fetch(`/api/state/${email}`);
                 const data = await res.json();
                 if (data.success && data.state) {
                     STATE = data.state;
@@ -887,7 +887,7 @@ function resetReviewView() {
 
 // Apollo API & Chat Logic
 async function callGeminiAPI(prompt, history) {
-    const endpoint = `http://localhost:3000/api/apollo`;
+    const endpoint = `/api/apollo`;
     const contents = [...history, { role: 'user', parts: [{ text: prompt }] }];
     
     try {
@@ -956,7 +956,7 @@ function sendApolloFollowUp() {
 async function renderChat() {
     if (!STATE.community || !STATE.community.activeGroup) return;
     try {
-        const res = await fetch('http://localhost:3000/api/chat');
+        const res = await fetch('/api/chat');
         const globalChat = await res.json();
         const messages = globalChat[STATE.community.activeGroup] || [];
         
@@ -981,7 +981,7 @@ async function sendChatMessage() {
         const group = STATE.community.activeGroup;
         chatInput.value = '';
         try {
-            await fetch(`http://localhost:3000/api/chat/${group}`, {
+            await fetch(`/api/chat/${group}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ sender: STATE.user.username, text: text })
