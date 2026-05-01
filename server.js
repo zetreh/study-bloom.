@@ -164,17 +164,10 @@ app.post('/api/apollo/upload', upload.single('file'), async (req, res) => {
 
 // ─── Start Server ─────────────────────────────────────────────────────────────
 
-initDB()
-    .then(() => {
-        app.listen(PORT, '0.0.0.0', () => {
-            console.log(`🌱 Study Grow server running on port ${PORT}`);
-        });
-    })
-    .catch(err => {
-        console.error('❌ Failed to initialize database:', err);
-        // Fallback: still start the server so Railway health checks pass
-        // and we can see if it's a DB issue or a startup issue.
-        app.listen(PORT, '0.0.0.0', () => {
-            console.log(`🌱 Study Grow server running on port ${PORT} (DB offline)`);
-        });
-    });
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`🌱 Study Grow server running on port ${PORT}`);
+});
+
+initDB().catch(err => {
+    console.error('❌ Failed to initialize database:', err);
+});
