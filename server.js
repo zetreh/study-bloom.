@@ -164,7 +164,7 @@ app.post('/api/apollo/upload', upload.single('file'), async (req, res) => {
 
 // ─── Start Server ─────────────────────────────────────────────────────────────
 
-app.listen(PORT, '0.0.0.0', () => {
+app.listen(PORT, () => {
     console.log(`🌱 Study Grow server running on port ${PORT}`);
 });
 
