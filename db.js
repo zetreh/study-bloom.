@@ -8,6 +8,11 @@ const pool = new Pool({
         : false
 });
 
+// Catch pool errors so they don't crash the Node.js process
+pool.on('error', (err, client) => {
+    console.error('Unexpected error on idle client', err);
+});
+
 async function initDB() {
     await pool.query(`
         CREATE TABLE IF NOT EXISTS users (
