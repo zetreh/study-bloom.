@@ -170,19 +170,10 @@ app.post('/api/apollo/upload', upload.single('file'), async (req, res) => {
 
 // ─── Start Server ─────────────────────────────────────────────────────────────
 
-app.listen(PORT, '::', () => {
+app.listen(PORT, () => {
     console.log(`🌱 Study Grow server running on port ${PORT}`);
 });
 
 initDB().catch(err => {
     console.error('❌ Failed to initialize database:', err);
-});
-
-// Global error handlers to prevent silent crashes
-process.on('uncaughtException', err => {
-    console.error('CRITICAL: Uncaught Exception:', err);
-});
-
-process.on('unhandledRejection', (reason, promise) => {
-    console.error('CRITICAL: Unhandled Rejection at:', promise, 'reason:', reason);
 });
