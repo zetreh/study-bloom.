@@ -58,6 +58,48 @@ app.post('/api/state/:email', async (req, res) => {
     }
 });
 
+// Admin: Get all users
+app.get('/api/users', async (req, res) => {
+    try {
+        const { rows } = await pool.query('SELECT email, state FROM users ORDER BY email ASC');
+        res.json(rows);
+    } catch (err) {
+        console.error('GET /api/users error:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Admin: Delete user
+app.delete('/api/users/:email', async (req, res) => {
+    try {
+        await pool.query('DELETE FROM users WHERE email = $1', [req.params.email]);
+        res.json({ success: true });
+    } catch (err) {
+        console.error('DELETE /api/users error:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Admin: Reset user progress
+app.post('/api/users/:email/reset', async (req, res) => {
+    try {
+        const { rows } = await pool.query('SELECT state FROM users WHERE email = $1', [req.params.email]);
+        if (rows.length > 0) {
+            const userState = rows[0].state;
+            userState.credits = 0;
+            userState.plant = { type: 'Sunflower', stage: 0, health: 100 };
+            
+            await pool.query('UPDATE users SET state = $1 WHERE email = $2', [userState, req.params.email]);
+            res.json({ success: true, state: userState });
+        } else {
+            res.status(404).json({ error: 'User not found' });
+        }
+    } catch (err) {
+        console.error('POST /api/users/reset error:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // ─── Community Chat ───────────────────────────────────────────────────────────
 
 // Get all chat messages grouped by channel

@@ -1004,63 +1004,73 @@ async function sendChatMessage() {
 init();
 
 // Admin Logic
-function renderAdminDashboard() {
+async function renderAdminDashboard() {
     if (!adminUsersList) return;
-    let totalUsers = 0;
-    let totalCredits = 0;
-    adminUsersList.innerHTML = '';
+    adminUsersList.innerHTML = '<tr><td colspan="5">Loading users...</td></tr>';
+    
+    try {
+        const res = await fetch('/api/users');
+        const users = await res.json();
+        
+        let totalUsers = 0;
+        let totalCredits = 0;
+        adminUsersList.innerHTML = '';
 
-    for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        if (key.startsWith('studyBloomState_')) {
+        users.forEach(u => {
             totalUsers++;
-            const userState = JSON.parse(localStorage.getItem(key));
-            totalCredits += userState.credits || 0;
-
+            totalCredits += u.state.credits || 0;
+            
             const tr = document.createElement('tr');
             tr.innerHTML = `
-                <td>${userState.user.username}</td>
-                <td>${userState.user.email}</td>
-                <td>${userState.credits}</td>
-                <td>${userState.plant.type} (${Math.round(userState.plant.health)}%)</td>
+                <td>${u.state.user.username}</td>
+                <td>${u.email}</td>
+                <td>${u.state.credits}</td>
+                <td>${u.state.plant.type} (${Math.round(u.state.plant.health)}%)</td>
                 <td>
-                    <button class="btn btn-warning small-btn" onclick="resetUserProgress('${userState.user.email}')">Reset</button>
-                    <button class="btn danger-btn small-btn" onclick="deleteUser('${userState.user.email}')">Delete</button>
+                    <button class="btn btn-warning small-btn" onclick="resetUserProgress('${u.email}')">Reset</button>
+                    <button class="btn danger-btn small-btn" onclick="deleteUser('${u.email}')">Delete</button>
                 </td>
             `;
             adminUsersList.appendChild(tr);
-        }
-    }
+        });
 
-    adminTotalUsers.textContent = totalUsers;
-    adminTotalCredits.textContent = totalCredits;
-    renderAdminPlants();
-    fetchAdminData();
+        adminTotalUsers.textContent = totalUsers;
+        adminTotalCredits.textContent = totalCredits;
+        renderAdminPlants();
+        fetchAdminData();
+    } catch(e) {
+        adminUsersList.innerHTML = '<tr><td colspan="5">Failed to load users</td></tr>';
+    }
 }
 
-window.resetUserProgress = function(email) {
+window.resetUserProgress = async function(email) {
     if(confirm(`Reset progress for ${email}?`)) {
-        const key = `studyBloomState_${email}`;
-        const userState = JSON.parse(localStorage.getItem(key));
-        userState.credits = 0;
-        userState.plant = { type: PLANT_TYPES[0].name, stage: 0, health: 100 };
-        localStorage.setItem(key, JSON.stringify(userState));
-        renderAdminDashboard();
-        if (STATE.user.email === email) {
-            STATE = userState;
-            updateUI();
-        }
+        try {
+            const res = await fetch(`/api/users/${email}/reset`, { method: 'POST' });
+            if (res.ok) {
+                renderAdminDashboard();
+                if (STATE.user && STATE.user.email === email) {
+                    const data = await res.json();
+                    STATE = data.state;
+                    updateUI();
+                }
+            }
+        } catch(e) {}
     }
 };
 
-window.deleteUser = function(email) {
+window.deleteUser = async function(email) {
     if(confirm(`Delete user ${email}?`)) {
-        localStorage.removeItem(`studyBloomState_${email}`);
-        if (STATE.user.email === email) {
-            btnLogout.click();
-        } else {
-            renderAdminDashboard();
-        }
+        try {
+            const res = await fetch(`/api/users/${email}`, { method: 'DELETE' });
+            if (res.ok) {
+                if (STATE.user && STATE.user.email === email) {
+                    btnLogout.click();
+                } else {
+                    renderAdminDashboard();
+                }
+            }
+        } catch(e) {}
     }
 };
 
