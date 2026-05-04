@@ -367,7 +367,7 @@ function setupEventListeners() {
 
 // Gamification Logic
 function updateUI() {
-    creditCountEl.textContent = STATE.credits;
+    creditCountEl.textContent = STATE.user && STATE.user.isAdmin ? '∞' : STATE.credits;
     
     // Plant UI
     if (STATE.plant.stage === -1) {
@@ -393,7 +393,7 @@ function updateUI() {
             plantNameEl.textContent = `${STATE.plant.type} (Stage ${STATE.plant.stage + 1}/5)`;
             btnWater.textContent = `Water Plant (Cost: 1 💧)`;
             btnWater.onclick = waterPlant;
-            btnWater.disabled = STATE.credits < 1;
+            btnWater.disabled = !(STATE.user && STATE.user.isAdmin) && STATE.credits < 1;
         }
 
         healthBarEl.style.width = `${STATE.plant.health}%`;
@@ -407,8 +407,11 @@ function updateUI() {
 }
 
 function waterPlant() {
-    if (STATE.credits >= 1 && STATE.plant.stage >= 0 && STATE.plant.stage < 4) {
-        STATE.credits -= 1;
+    const hasEnoughCredits = (STATE.user && STATE.user.isAdmin) || STATE.credits >= 1;
+    if (hasEnoughCredits && STATE.plant.stage >= 0 && STATE.plant.stage < 4) {
+        if (!(STATE.user && STATE.user.isAdmin)) {
+            STATE.credits -= 1;
+        }
         STATE.plant.stage += 1;
         STATE.plant.health = Math.min(100, STATE.plant.health + 20); // Heal a bit when watered
         
@@ -791,6 +794,7 @@ function startReviewSession() {
         apolloChatInputArea.classList.add('hidden');
         
         STATE.apolloHistory = [];
+        
         const prompt = `You are Apollo, an expert study tutor. The user wants to study "${STATE.apolloTopic}" using the "${techName}" technique. Provide a highly educational synthesis consisting of 3 core concepts, an analogy, and a mini-quiz. Use HTML formatting like <h3> and <strong> and <ul> for structure.`;
         
         callGeminiAPI(prompt, []).then(response => {
@@ -981,11 +985,16 @@ async function sendChatMessage() {
         const group = STATE.community.activeGroup;
         chatInput.value = '';
         try {
-            await fetch(`/api/chat/${group}`, {
+            const res = await fetch(`/api/chat/${group}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ sender: STATE.user.username, text: text })
             });
+            const data = await res.json();
+            if (res.status === 403) {
+                alert(data.error);
+                return;
+            }
             renderChat();
         } catch(e) {}
     }
@@ -1026,6 +1035,7 @@ function renderAdminDashboard() {
     adminTotalUsers.textContent = totalUsers;
     adminTotalCredits.textContent = totalCredits;
     renderAdminPlants();
+    fetchAdminData();
 }
 
 window.resetUserProgress = function(email) {
@@ -1103,3 +1113,87 @@ function initiateFileApolloSession(techName) {
         renderApolloChat();
     });
 }
+
+// --- New Admin Features ---
+
+async function fetchAdminData() {
+    if (!STATE.user || !STATE.user.isAdmin) return;
+    
+    // Fetch Chat Logs
+    try {
+        const res = await fetch('/api/chat');
+        const chatData = await res.json();
+        const chatList = document.getElementById('admin-chat-list');
+        if (chatList) {
+            chatList.innerHTML = '';
+            for (const group in chatData) {
+                chatData[group].forEach(msg => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${msg.id}</td>
+                        <td>${group}</td>
+                        <td>${msg.sender}</td>
+                        <td>${msg.text}</td>
+                        <td><button class="btn danger-btn small-btn" onclick="deleteChatMessage(${msg.id})">Delete</button></td>
+                    `;
+                    chatList.appendChild(tr);
+                });
+            }
+        }
+    } catch(e) {}
+
+    // Fetch Banned Users
+    try {
+        const res = await fetch('/api/banned_users');
+        const banned = await res.json();
+        const bannedList = document.getElementById('admin-banned-list');
+        if (bannedList) {
+            bannedList.innerHTML = '';
+            banned.forEach(user => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <span>${user}</span>
+                        <button class="btn success-btn small-btn" onclick="unbanUser('${user}')">Unban</button>
+                    </div>
+                `;
+                bannedList.appendChild(li);
+            });
+        }
+    } catch(e) {}
+
+
+}
+
+window.deleteChatMessage = async function(id) {
+    if(confirm('Delete this message?')) {
+        await fetch(`/api/chat/${id}`, { method: 'DELETE' });
+        fetchAdminData();
+        renderChat(); // update live chat view too if active
+    }
+};
+
+window.unbanUser = async function(username) {
+    if(confirm(`Unban ${username}?`)) {
+        await fetch(`/api/banned_users/${username}`, { method: 'DELETE' });
+        fetchAdminData();
+    }
+};
+
+const adminBanForm = document.getElementById('admin-ban-form');
+if (adminBanForm) {
+    adminBanForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const username = document.getElementById('ban-username').value.trim();
+        if (username) {
+            await fetch('/api/banned_users', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username })
+            });
+            document.getElementById('ban-username').value = '';
+            fetchAdminData();
+        }
+    });
+}
+

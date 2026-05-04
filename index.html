@@ -344,6 +344,32 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="admin-panel-card glass-panel" style="margin-top: 2rem;">
+                        <h3>Community Moderation</h3>
+                        <div style="display: flex; gap: 2rem; margin-top: 1rem; flex-wrap: wrap;">
+                            <div style="flex: 2; min-width: 300px;">
+                                <h4>Global Chat Logs</h4>
+                                <div class="table-responsive" style="margin-top: 0.5rem; max-height: 300px; overflow-y: auto;">
+                                    <table class="admin-table">
+                                        <thead><tr><th>ID</th><th>Group</th><th>Sender</th><th>Message</th><th>Action</th></tr></thead>
+                                        <tbody id="admin-chat-list"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div style="flex: 1; min-width: 200px;">
+                                <h4>Ban User</h4>
+                                <form id="admin-ban-form" style="margin-top: 0.5rem;">
+                                    <input type="text" id="ban-username" placeholder="Username" required style="width: 100%; margin-bottom: 0.5rem;">
+                                    <button type="submit" class="btn danger-btn small-btn" style="width: 100%;">Ban User</button>
+                                </form>
+                                <h4 style="margin-top: 1.5rem;">Banned Users</h4>
+                                <ul id="admin-banned-list" class="styled-list" style="margin-top: 0.5rem;"></ul>
+                            </div>
+                        </div>
+                    </div>
+
+
                 </div>
             </section>
 

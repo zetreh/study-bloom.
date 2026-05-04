@@ -64,14 +64,14 @@ app.post('/api/state/:email', async (req, res) => {
 app.get('/api/chat', async (req, res) => {
     try {
         const { rows } = await pool.query(
-            'SELECT group_name, sender, text FROM chat_messages ORDER BY id ASC'
+            'SELECT id, group_name, sender, text FROM chat_messages ORDER BY id ASC'
         );
 
         // Restructure into { general: [...], biology: [...], ... }
         const chat = { general: [], biology: [], history: [], programming: [] };
         for (const row of rows) {
             if (!chat[row.group_name]) chat[row.group_name] = [];
-            chat[row.group_name].push({ sender: row.sender, text: row.text });
+            chat[row.group_name].push({ id: row.id, sender: row.sender, text: row.text });
         }
         res.json(chat);
     } catch (err) {
@@ -83,6 +83,11 @@ app.get('/api/chat', async (req, res) => {
 // Post a chat message
 app.post('/api/chat/:group', async (req, res) => {
     try {
+        const { rowCount } = await pool.query('SELECT 1 FROM banned_users WHERE username = $1', [req.body.sender]);
+        if (rowCount > 0) {
+            return res.status(403).json({ error: 'You are banned from the community chat.' });
+        }
+
         await pool.query(
             'INSERT INTO chat_messages (group_name, sender, text) VALUES ($1, $2, $3)',
             [req.params.group, req.body.sender, req.body.text]
@@ -90,16 +95,57 @@ app.post('/api/chat/:group', async (req, res) => {
 
         // Return full updated chat
         const { rows } = await pool.query(
-            'SELECT group_name, sender, text FROM chat_messages ORDER BY id ASC'
+            'SELECT id, group_name, sender, text FROM chat_messages ORDER BY id ASC'
         );
         const chat = { general: [], biology: [], history: [], programming: [] };
         for (const row of rows) {
             if (!chat[row.group_name]) chat[row.group_name] = [];
-            chat[row.group_name].push({ sender: row.sender, text: row.text });
+            chat[row.group_name].push({ id: row.id, sender: row.sender, text: row.text });
         }
         res.json({ success: true, chat });
     } catch (err) {
         console.error('POST /api/chat error:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Delete a chat message
+app.delete('/api/chat/:id', async (req, res) => {
+    try {
+        await pool.query('DELETE FROM chat_messages WHERE id = $1', [req.params.id]);
+        res.json({ success: true });
+    } catch (err) {
+        console.error('DELETE /api/chat error:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Get banned users
+app.get('/api/banned_users', async (req, res) => {
+    try {
+        const { rows } = await pool.query('SELECT username FROM banned_users ORDER BY username ASC');
+        res.json(rows.map(r => r.username));
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Ban a user
+app.post('/api/banned_users', async (req, res) => {
+    try {
+        await pool.query('INSERT INTO banned_users (username) VALUES ($1) ON CONFLICT DO NOTHING', [req.body.username]);
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Unban a user
+app.delete('/api/banned_users/:username', async (req, res) => {
+    try {
+        await pool.query('DELETE FROM banned_users WHERE username = $1', [req.params.username]);
+        res.json({ success: true });
+    } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });

@@ -38,6 +38,12 @@ async function initDB() {
         );
     `);
 
+    await pool.query(`
+        CREATE TABLE IF NOT EXISTS banned_users (
+            username TEXT PRIMARY KEY
+        );
+    `);
+
     // Seed default chat messages if the table is empty
     const { rowCount } = await pool.query('SELECT 1 FROM chat_messages LIMIT 1');
     if (rowCount === 0) {
